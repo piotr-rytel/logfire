@@ -2,6 +2,9 @@
 
 from __future__ import annotations
 
+import logging
+import os
+from datetime import datetime
 from typing import Any
 
 from logfire.sampling import SamplingOptions
@@ -76,6 +79,34 @@ metric_gauge = DEFAULT_LOGFIRE_INSTANCE.metric_gauge
 metric_counter_callback = DEFAULT_LOGFIRE_INSTANCE.metric_counter_callback
 metric_gauge_callback = DEFAULT_LOGFIRE_INSTANCE.metric_gauge_callback
 metric_up_down_counter_callback = DEFAULT_LOGFIRE_INSTANCE.metric_up_down_counter_callback
+
+
+def save_local_logs():
+    """
+    Set up logging for Agno with logs saved to a date-based file in the logs directory.
+    
+    The logs are saved to a file named 'agno_YYYY-MM-DD_HH-MM-SS.log' in the logs directory.
+    Each log line will be prefixed with a timestamp in HH:MM:SS.mmm format (time with milliseconds).
+    """
+    # Create logs directory if it doesn't exist
+    os.makedirs('logs', exist_ok=True)
+    
+    # Get current date and time for filename
+    timestamp = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
+    log_filename = f'logs/agno_{timestamp}.log'
+    
+    # Configure the agno logger
+    agno_logger = logging.getLogger("agno")
+    
+    # Create file handler with the date-based filename
+    file_handler = logging.FileHandler(log_filename, mode='w', encoding='utf-8')
+    
+    # Create a formatter with time and milliseconds at the beginning of each line
+    # %f gives microseconds (6 digits), so we use a slice to get only milliseconds (3 digits)
+    formatter = logging.Formatter('%(asctime)s.%(msecs)03d - %(message)s', datefmt='%H:%M:%S')
+    file_handler.setFormatter(formatter)
+    
+    agno_logger.addHandler(file_handler)
 
 
 def loguru_handler() -> Any:
@@ -158,4 +189,5 @@ __all__ = (
     'SamplingOptions',
     'MetricsOptions',
     'logfire_info',
+    'save_local_logs',
 )
