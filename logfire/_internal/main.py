@@ -19,6 +19,8 @@ from typing import (
     TypeVar,
     Union,
     overload,
+    List,
+    Optional,
 )
 
 import opentelemetry.context as context_api
@@ -1131,6 +1133,56 @@ class Logfire:
             on_response,
             is_async_client,
         )
+
+    def instrument_tools(
+        self,
+        tools: List[Any],
+        function_call_class: Optional[Any] = None,
+        tags: Optional[List[str]] = None,
+    ) -> None:
+        """
+        Instrument tools used by agent frameworks for observability.
+        
+        This method adds instrumentation to tools used by agent frameworks, creating spans
+        for each tool call and capturing relevant information for debugging and observability.
+        It can instrument both tool instances and the FunctionCall class used by the agent
+        framework to execute tool calls.
+        
+        Args:
+            tools: A list of tool instances to instrument
+            function_call_class: Optional FunctionCall class to instrument
+            tags: Optional list of tags to apply to spans
+            
+        Returns:
+            None
+        
+        Example:
+            ```python
+            import logfire
+            from agno.tools.duckduckgo import DuckDuckGoTools
+            from agno.tools.function import FunctionCall
+            
+            # Configure Logfire
+            logfire.configure()
+            
+            # Create tools
+            tools = DuckDuckGoTools()
+            
+            # Instrument tools
+            logfire.instrument_tools([tools], function_call_class=FunctionCall)
+            ```
+        """
+        self._warn_if_not_initialized_for_instrumentation()
+        
+        from logfire._internal.integrations.tools.tool_provider import instrument_tools
+        from logfire._internal.integrations.tools.function_call import instrument_function_call
+        
+        # Instrument the tools - pass self (the Logfire instance) as first argument
+        instrument_tools(self, tools, tags=tags)
+        
+        # Instrument the FunctionCall class if provided
+        if function_call_class:
+            instrument_function_call(function_call_class, tags=tags)
 
     def instrument_openai_agents(self) -> None:
         """Instrument the [`agents`](https://github.com/openai/openai-agents-python) framework from OpenAI.
