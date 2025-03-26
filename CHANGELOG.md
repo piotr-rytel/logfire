@@ -1,5 +1,22 @@
 # Release Notes
 
+## [v3.11.0] (2025-03-26)
+
+* Add `record_return` flag to `@logfire.instrument` by @alexmojaki in [#955](https://github.com/pydantic/logfire/pull/955)
+
+## [v3.10.0] (2025-03-25)
+
+* Account for new EU region by @Viicos in [#901](https://github.com/pydantic/logfire/pull/901)
+
+## [v3.9.1] (2025-03-25)
+
+* Handle Anthropic thinking blocks by @alexmojaki in [#952](https://github.com/pydantic/logfire/pull/952)
+* Handle new voice span types from OpenAI Agents SDK by @alexmojaki in [#943](https://github.com/pydantic/logfire/pull/943)
+
+## [v3.9.0] (2025-03-18)
+
+* Add `logfire.instrument_pydantic_ai()` by @alexmojaki in [#926](https://github.com/pydantic/logfire/pull/926)
+
 ## [v3.8.1] (2025-03-13)
 
 * Upgrade to OpenTelemetry 1.31.0 by @alexmojaki in [#927](https://github.com/pydantic/logfire/pull/927)
@@ -628,3 +645,7 @@ First release from new repo!
 [v3.7.1]: https://github.com/pydantic/logfire/compare/v3.7.0...v3.7.1
 [v3.8.0]: https://github.com/pydantic/logfire/compare/v3.7.1...v3.8.0
 [v3.8.1]: https://github.com/pydantic/logfire/compare/v3.8.0...v3.8.1
+[v3.9.0]: https://github.com/pydantic/logfire/compare/v3.8.1...v3.9.0
+[v3.9.1]: https://github.com/pydantic/logfire/compare/v3.9.0...v3.9.1
+[v3.10.0]: https://github.com/pydantic/logfire/compare/v3.9.1...v3.10.0
+[v3.11.0]: https://github.com/pydantic/logfire/compare/v3.10.0...v3.11.0

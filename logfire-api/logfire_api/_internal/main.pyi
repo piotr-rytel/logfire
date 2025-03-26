@@ -2,6 +2,8 @@ import anthropic
 import httpx
 import openai
 import opentelemetry.trace as trace_api
+import pydantic_ai
+import pydantic_ai.models
 import requests
 from . import async_ as async_
 from ..integrations.flask import CommenterOptions as FlaskCommenterOptions, RequestHook as FlaskRequestHook, ResponseHook as FlaskResponseHook
@@ -233,7 +235,7 @@ class Logfire:
                 Attributes starting with an underscore are not allowed.
         """
     @overload
-    def instrument(self, msg_template: LiteralString | None = None, *, span_name: str | None = None, extract_args: bool | Iterable[str] = True, allow_generator: bool = False) -> Callable[[Callable[P, R]], Callable[P, R]]:
+    def instrument(self, msg_template: LiteralString | None = None, *, span_name: str | None = None, extract_args: bool | Iterable[str] = True, record_return: bool = False, allow_generator: bool = False) -> Callable[[Callable[P, R]], Callable[P, R]]:
         """Decorator for instrumenting a function as a span.
 
         ```py
@@ -252,6 +254,8 @@ class Logfire:
             span_name: The span name. If not provided, the `msg_template` will be used.
             extract_args: By default, all function call arguments are logged as span attributes.
                 Set to `False` to disable this, or pass an iterable of argument names to include.
+            record_return: Set to `True` to record the return value of the function as an attribute.
+                Ignored for generators.
             allow_generator: Set to `True` to prevent a warning when instrumenting a generator function.
                 Read https://logfire.pydantic.dev/docs/guides/advanced/generators/#using-logfireinstrument first.
         """
@@ -415,6 +419,10 @@ class Logfire:
             exclude:
                 Exclude specific modules from instrumentation.
         """
+    @overload
+    def instrument_pydantic_ai(self, obj: pydantic_ai.Agent | None = None, /, *, event_mode: Literal['attributes', 'logs'] = 'attributes') -> None: ...
+    @overload
+    def instrument_pydantic_ai(self, obj: pydantic_ai.models.Model, /, *, event_mode: Literal['attributes', 'logs'] = 'attributes') -> pydantic_ai.models.Model: ...
     def instrument_fastapi(self, app: FastAPI, *, capture_headers: bool = False, request_attributes_mapper: Callable[[Request | WebSocket, dict[str, Any]], dict[str, Any] | None] | None = None, excluded_urls: str | Iterable[str] | None = None, record_send_receive: bool = False, **opentelemetry_kwargs: Any) -> ContextManager[None]:
         """Instrument a FastAPI app so that spans and logs are automatically created for each request.
 
